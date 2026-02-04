@@ -4,7 +4,7 @@
 import pandas as pd #Read Data
 import numpy as np #Create Graphs
 
-df = pd.read_csv("../energy_synth.csv.zip")
+df = pd.read_csv("../Indentifying Trends Code/energy_synth.csv.zip")
 df["date_time"] = pd.to_datetime(df["date_time"]) #Converts strings into date_time object so it can read as one
 
 ################# Split Data Into Before/After ####################

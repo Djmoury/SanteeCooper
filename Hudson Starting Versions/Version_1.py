@@ -1,7 +1,7 @@
 
 import pandas as pd
 
-df = pd.read_csv("../energy_synth.csv.zip")
+df = pd.read_csv("../Indentifying Trends Code/energy_synth.csv.zip")
 
 #Set Variables for each column header
 Customer = df["customer_id"]
