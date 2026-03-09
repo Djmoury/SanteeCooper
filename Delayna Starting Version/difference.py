@@ -69,3 +69,112 @@ plt.show()
 # Quick Summary
 avg_saving = diff_df['delta'].mean()
 print(f"Average daily change after {RATE_CHANGE_DATE}: {avg_saving:.2f} {target_col}")
+
+plt.figure(figsize=(12, 6))
+
+customers = df["customer_id"].unique()
+for cust in customers:
+    cust_df = df[df["customer_id"] == cust]
+
+    before = cust_df[cust_df["date_time"] < rate_date]
+    after  = cust_df[cust_df["date_time"] >= rate_date]
+
+    daily_before = before.resample('D', on='date_time')[target_col].mean()
+    daily_after  = after.resample('D', on='date_time')[target_col].mean()
+
+    if len(daily_before) > 0:
+        daily_before.index = (daily_before.index - daily_before.index.min()).days
+        plt.plot(daily_before.index,
+                 daily_before.rolling(7).mean(),
+                 color='blue', alpha=0.15)
+
+    if len(daily_after) > 0:
+        daily_after.index = (daily_after.index - daily_after.index.min()).days
+        plt.plot(daily_after.index,
+                 daily_after.rolling(7).mean(),
+                 color='orange', alpha=0.15)
+
+plt.title("All Customers: Before vs After Rate Change")
+plt.xlabel("Days Since Period Start")
+plt.ylabel(target_col)
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.show()
+
+
+# -----------------------------
+# 1. Load Data
+# -----------------------------
+df = pd.read_csv("../.venv/energy_synth.csv")
+df["date_time"] = pd.to_datetime(df["date_time"])
+
+target_col = "kWhr"
+
+# -----------------------------
+# 2. Define Rate Change
+# -----------------------------
+RATE_CHANGE_DATE = "2025-04-15"
+rate_date = pd.to_datetime(RATE_CHANGE_DATE)
+
+# Pick one full day before and after
+before_day = pd.to_datetime("2025-04-14")
+after_day  = pd.to_datetime("2025-04-17")
+
+# -----------------------------
+# 3. Filter to Those Days
+# -----------------------------
+df_before_day = df[df["date_time"].dt.date == before_day.date()].copy()
+df_after_day  = df[df["date_time"].dt.date == after_day.date()].copy()
+
+# Extract hour of day
+df_before_day["hour"] = df_before_day["date_time"].dt.hour
+df_after_day["hour"]  = df_after_day["date_time"].dt.hour
+
+# -----------------------------
+# 4. Plot Hourly Usage by Customer
+# -----------------------------
+customers = df["customer_id"].unique()
+
+plt.figure(figsize=(12, 6))
+
+for cust in customers:
+    before_cust = df_before_day[df_before_day["customer_id"] == cust]
+    after_cust  = df_after_day[df_after_day["customer_id"] == cust]
+
+    if not before_cust.empty:
+        hourly_before = before_cust.groupby("hour")[target_col].mean()
+        plt.plot(hourly_before.index,
+                 hourly_before.values,
+                 color='blue',
+                 alpha=0.2)
+
+    if not after_cust.empty:
+        hourly_after = after_cust.groupby("hour")[target_col].mean()
+        plt.plot(hourly_after.index,
+                 hourly_after.values,
+                 color='orange',
+                 alpha=0.2)
+
+# Legend (clean version)
+plt.plot([], [], color='blue', label='Before (April 14, 2025)')
+plt.plot([], [], color='orange', label='After (April 16, 2025)')
+
+plt.title("Hourly Energy Usage by Customer\nDay Before vs Day After Rate Change")
+plt.xlabel("Hour of Day")
+plt.ylabel(target_col)
+plt.xticks(range(0, 24))
+plt.grid(True, alpha=0.3)
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# -----------------------------
+# 5. Quick Summary Statistic
+# -----------------------------
+avg_before = df_before_day[target_col].mean()
+avg_after  = df_after_day[target_col].mean()
+
+print("Average usage April 14:", round(avg_before, 2), target_col)
+print("Average usage June 14:", round(avg_after, 2), target_col)
+print("Average change:", round(avg_after - avg_before, 2), target_col)
