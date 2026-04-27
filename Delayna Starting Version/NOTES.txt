@@ -1,0 +1,44 @@
+SANTEE COOPER NOTES:
+
+January/February:
+Worked with synthetic data creating graphs from before and after the peak switch.
+Created 300 graphs for each pre and post 4-15-2026
+These graphs were then used in different types of clustering to be used in a k-means analysis
+I received the real data in March and started working separately to get an idea of what working with the table would be like.
+
+
+Received data shared 3/18/2026:
+Worked on getting it to work in python
+
+3/28/2026:
+Switched to working with PySpark to read the data
+Was able to filter out to 3 columns
+Amount of rows: 7329182675 (7 billion)
+
+Without filter: 48.54 seconds
+
+With filter: 50.05 seconds
+
+
+of 50000 samples
+Sequential sample time: 11.33 seconds
+Random sample time: 265.58 seconds
+
+
+
+4/1-4/6/2026:
+Learned that the data is only from April 26th 2025 until May 18th 2025
+Started creating graphs from real data
+Created FIRST 10 CUSTOMER line graph that have each day as a line, and show the hourly data.
+Saw some interesting trends, not as uniform as synthetic data.
+Did this without PySpark, might need to use it when moving to more data.
+
+
+
+
+
+
+
+
+
+
